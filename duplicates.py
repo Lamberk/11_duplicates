@@ -25,11 +25,14 @@ def get_files(file_path):
     return files_set
 
 
-def remove_duplicates(file_path1, file_path2):
+def find_duplicates(file_path1, file_path2):
     first_set = get_files(file_path1)
     second_set = get_files(file_path2)
-    [os.remove(GLOBAL_DICTIONARY[file]) for file in first_set & second_set]
-
+    dupl_files = [GLOBAL_DICTIONARY[file] for file in first_set & second_set]
+    if dupl_files:
+        print('Duplicates found: ', dupl_files)
+    else:
+        print('No duplicates found')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -46,4 +49,4 @@ if __name__ == '__main__':
         required=True,
     )
     args = parser.parse_args()
-    remove_duplicates(args.path1, args.path2)
+    find_duplicates(args.path1, args.path2)
