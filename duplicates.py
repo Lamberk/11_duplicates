@@ -1,52 +1,36 @@
 import os
 import argparse
-
-
-GLOBAL_DICTIONARY = dict()
+from collections import defaultdict
 
 
 def get_files(file_path):
-    files_set = set()
+    files_dict = defaultdict(list)
     for root, subdirs, files in os.walk(file_path):
         if files:
-            files_set.update(
-                {
-                    '{}.{}'.format(
-                        file,
-                        os.stat(os.path.join(root, file)).st_size,
-                    ) for file in files
-                }
-            )
             for file in files:
-                GLOBAL_DICTIONARY['{}.{}'.format(
+                files_dict['{}.{}'.format(
                     file,
                     os.stat(os.path.join(root, file)).st_size,
-                )] = os.path.join(root, file)
-    return files_set
+                )].append(os.path.join(root, file))
+    return files_dict
 
 
-def find_duplicates(file_path1, file_path2):
-    first_set = get_files(file_path1)
-    second_set = get_files(file_path2)
-    dupl_files = [GLOBAL_DICTIONARY[file] for file in first_set & second_set]
+def find_duplicates(file_path):
+    files = get_files(file_path)
+    dupl_files = [path for path in files.values() if len(path) > 1]
     if dupl_files:
         print('Duplicates found: ', dupl_files)
     else:
         print('No duplicates found')
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-p1',
-        '--path1',
-        help='Path to first folder',
-        required=True,
-    )
-    parser.add_argument(
-        '-p2',
-        '--path2',
-        help='Path to second folder',
+        '-p',
+        '--path',
+        help='Path to folder',
         required=True,
     )
     args = parser.parse_args()
-    find_duplicates(args.path1, args.path2)
+    find_duplicates(args.path)
