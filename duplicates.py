@@ -3,7 +3,7 @@ import argparse
 from collections import defaultdict
 
 
-def get_files(file_path):
+def get_files(file_path):   
     files_dict = defaultdict(list)
     for root, subdirs, files in os.walk(file_path):
         if files:
@@ -15,10 +15,8 @@ def get_files(file_path):
     return files_dict
 
 
-def find_duplicates(file_path):
-    files = get_files(file_path)
-    dupl_files = [path for path in files.values() if len(path) > 1]
-    return dupl_files
+def find_duplicates(files):
+    return [path for path in files.values() if len(path) > 1]
 
 
 if __name__ == '__main__':
@@ -30,7 +28,8 @@ if __name__ == '__main__':
         required=True,
     )
     args = parser.parse_args()
-    dupl_files = find_duplicates(args.path)
+    files = get_files(args.path)
+    dupl_files = find_duplicates(files)
     if dupl_files:
         print('Duplicates found: ', dupl_files)
     else:
